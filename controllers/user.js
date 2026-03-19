@@ -1,4 +1,15 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const {
+  BAD_REQUEST_STATUS_CODE,
+  UNAUTHORIZED_STATUS_CODE,
+  ASSERTION_ERROR_STATUS_CODE,
+  NOT_FOUND_STATUS_CODE,
+  INTERNAL_SERVER_ERROR,
+} = require("../utils/errors");
+
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config.js");
 
 const getUsers = (req, res) => {
   User.find({})
@@ -6,38 +17,97 @@ const getUsers = (req, res) => {
 
     .catch((err) => {
       console.error(err);
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
+
+//update for #2 task
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+  bcrypt.hash(password, 10).then((hash) =>
+    User.create({ name, avatar, email, password: hash })
+      .then((user) => {
+        const userCopy = user.toObject();
+        delete userCopy.password;
+        res.status(201).send(userCopy);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (err.name === "ValidationError") {
+          return res
+            .status(BAD_REQUEST_STATUS_CODE)
+            .send({ message: err.message });
+        }
+        if (err.name === "11000") {
+          return res.status(409).send({ message: "Duplicate Email" });
+        }
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      })
+  );
 };
 
-const getUser = (req, res) => {
-  const { userId } = req.params;
-  User.findById(userId)
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res.status(NOT_FOUND_STATUS_CODE).send({ message: err.message });
       } else if (err.name === "CastError") {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
-module.exports = { getUsers, createUser, getUser };
+// Update from task #3
+const login = (req, res) => {
+  const { email, password } = req.body;
+  if (!email || email.trim() === "" || !password || password.trim() === "") {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE)
+      .send({ message: "All fields are required!" });
+  }
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      return res.status(200).send({ token });
+    })
+    .catch((error) => {
+      if (error.message === "Incorrect email or password") {
+        res
+          .status(UNAUTHORIZED_STATUS_CODE)
+          .send({ message: "Check email and password" });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: error.message });
+    });
+};
+
+const updateProfile = (req, res) => {
+  const { name, avatar } = req.body;
+
+  User.findByIdAndUpdate(req.user._id, { name, avatar })
+    .then((user) => res.status(200).send({ user }))
+
+    .catch((err) => {
+      console.error(err);
+      if (err.message === "Authorization Required") {
+        res
+          .status(UNAUTHORIZED_STATUS_CODE)
+          .send({ message: "Incorrect Username" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "Error From updateProfile" });
+    });
+};
+
+module.exports = { getUsers, createUser, getCurrentUser, login, updateProfile };

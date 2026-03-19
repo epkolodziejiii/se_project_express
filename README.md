@@ -1,9 +1,26 @@
-# WTWR (What to Wear?): Back End
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
+# WTWR - Sprint 12 & 13 (What to Wear?): Backend Description
+
+This back-end project is focused on creating a server for the WTWR application. This project displays a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization (Sprint 14). Some difficulties arose with testing the project, however, now the error handeling is standardized and all research has been concluded into all error messages.
+
+## Tech Stack
+
+-Postman
+-Mongo DB
+-Node.js
+-Java Script
+-Express
+-AI was used sparing to help research error messages and middleware issues.
+
+## Pitch Video (recorded on Loom): (https://drive.google.com/file/d/1xHlwvHoqv_S0pEvzvHXPq3fG0Dxhu6DX/view?usp=sharing)
+
+##Deployment
+
+-This webpage is deployed on GIT Hub [Link to the project on Github] (TBD)
+
 ## Running the Project
-`npm run start` — to launch the server 
+
+`npm run start` — to launch the server
 
 `npm run dev` — to launch the server with the hot reload feature
 
 ### Testing
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
