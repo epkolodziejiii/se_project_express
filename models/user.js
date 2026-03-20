@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema({
       message: "You must enter a valid URL",
     },
   },
-  //update from task #1
   email: {
     type: String,
     required: true,

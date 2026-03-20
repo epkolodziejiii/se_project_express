@@ -1,13 +1,7 @@
 const router = require("express").Router();
 const clothingItem = require("./clothingItems");
 const userRouter = require("./users");
-const {
-  BAD_REQUEST_STATUS_CODE,
-  UNAUTHORIZED_STATUS_CODE,
-  ASSERTION_ERROR_STATUS_CODE,
-  NOT_FOUND_STATUS_CODE,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/errors");
+const { INTERNAL_SERVER_ERROR } = require("../utils/errors");
 
 const { createUser, login } = require("../controllers/user");
 

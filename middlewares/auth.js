@@ -1,12 +1,6 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config.js");
-const {
-  BAD_REQUEST_STATUS_CODE,
-  UNAUTHORIZED_STATUS_CODE,
-  ASSERTION_ERROR_STATUS_CODE,
-  NOT_FOUND_STATUS_CODE,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/errors");
+const { JWT_SECRET } = require("../utils/config");
+const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
 
 function auth(req, res, next) {
   const { authorization } = req.headers;
@@ -15,11 +9,8 @@ function auth(req, res, next) {
       .status(UNAUTHORIZED_STATUS_CODE)
       .send({ error: "Authorization Required" });
   }
-
   const token = authorization.replace("Bearer ", "");
-
   let payload;
-
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (error) {
@@ -27,9 +18,8 @@ function auth(req, res, next) {
       .status(UNAUTHORIZED_STATUS_CODE)
       .send({ error: "Authorization Required" });
   }
-
   req.user = payload;
-  next();
+  return next();
 }
 
 module.exports = auth;

@@ -1,15 +1,15 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const { JWT_SECRET } = require("../utils/config");
+
 const {
   BAD_REQUEST_STATUS_CODE,
   UNAUTHORIZED_STATUS_CODE,
-  ASSERTION_ERROR_STATUS_CODE,
+
   NOT_FOUND_STATUS_CODE,
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
-
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config.js");
 
 const getUsers = (req, res) => {
   User.find({})
@@ -20,8 +20,6 @@ const getUsers = (req, res) => {
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
-
-//update for #2 task
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -56,7 +54,8 @@ const getCurrentUser = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS_CODE).send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: err.message });

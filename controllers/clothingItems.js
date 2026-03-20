@@ -2,7 +2,7 @@ const ClothingItem = require("../models/clothingItem");
 
 const {
   BAD_REQUEST_STATUS_CODE,
-  UNAUTHORIZED_STATUS_CODE,
+
   ASSERTION_ERROR_STATUS_CODE,
   NOT_FOUND_STATUS_CODE,
   INTERNAL_SERVER_ERROR,
@@ -25,9 +25,8 @@ const createItem = (req, res) => {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: err.message });
-      } else {
-        return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -73,7 +72,9 @@ const deleteItem = (req, res) => {
           .status(ASSERTION_ERROR_STATUS_CODE)
           .send({ message: "Unauthorized! User Change!" });
       }
-      res.status(200).send({ message: "Item delete successfully" });
+      return ClothingItem.findbyIdandDelete(itemId).then(() =>
+        res.status(200).send({ message: "Item delete successfully" })
+      );
     })
     .catch((err) => {
       console.error(err);
