@@ -72,7 +72,7 @@ const deleteItem = (req, res) => {
           .status(ASSERTION_ERROR_STATUS_CODE)
           .send({ message: "Unauthorized! User Change!" });
       }
-      return ClothingItem.findbyIdandDelete(itemId).then(() =>
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
         res.status(200).send({ message: "Item delete successfully" })
       );
     })

@@ -11,7 +11,7 @@ This back-end project is focused on creating a server for the WTWR application. 
 -Express
 -AI was used sparing to help research error messages and middleware issues.
 
-## Pitch Video (recorded on Loom): (https://drive.google.com/file/d/1T1k-CFceCLEXhzb6V4CFtyYgBliHBL98/view?usp=drive_link)
+## Pitch Video (recorded on Loom): (https://drive.google.com/file/d/1mktAOCMvARtCgSIZZ4OVUjiB8C47m0b_/view?usp=drive_link)
 
 ##Deployment
 

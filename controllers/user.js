@@ -93,8 +93,8 @@ const login = (req, res) => {
 const updateProfile = (req, res) => {
   const { name, avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, avatar })
-    .then((user) => res.status(200).send({ user }))
+  User.findByIdAndUpdate(req.user._id, { name, avatar }, { new: true })
+    .then((user) => res.status(200).send(user))
 
     .catch((err) => {
       console.error(err);
