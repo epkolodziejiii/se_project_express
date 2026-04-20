@@ -1,18 +1,25 @@
 const router = require("express").Router();
-const clothingItem = require("./clothingItems");
+const clothingItemRouter = require("./clothingItems"); // Fixed naming
 const userRouter = require("./users");
-const { INTERNAL_SERVER_ERROR } = require("../utils/errors");
+const { createUser, login } = require("../controllers/user"); // Keep for root routes
+const {
+  createUserValidator,
+  loginValidator,
+} = require("../middlewares/validation");
 
-const { createUser, login } = require("../controllers/user");
+// ROOT ROUTES (public)
+router.post("/signin", loginValidator, login);
+router.post("/signup", createUserValidator, createUser);
 
-router.post("/signin", login);
-router.post("/signup", createUser);
-
+// API ROUTES
 router.use("/users", userRouter);
+router.use("/items", clothingItemRouter);
 
-router.use("/items", clothingItem);
-router.use((req, res) => {
-  res.status(INTERNAL_SERVER_ERROR).send({ message: "Router not found" });
+// 404 HANDLER - MUST BE LAST
+router.use((req, res, next) => {
+  const err = new Error(`Route ${req.originalUrl} not found`);
+  err.statusCode = 404;
+  next(err); // Let errorHandler respond
 });
 
 module.exports = router;

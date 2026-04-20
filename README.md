@@ -15,7 +15,7 @@ This back-end project is focused on creating a server for the WTWR application. 
 
 ##Deployment
 
--This webpage is deployed on GIT Hub [Link to the project on Github] (TBD)
+-This webpage is deployed on Google Cloud [Link to the project on Github] (TBD)
 
 ## Running the Project
 

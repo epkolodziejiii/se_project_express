@@ -2,26 +2,20 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-
 const {
-  BAD_REQUEST_STATUS_CODE,
-  UNAUTHORIZED_STATUS_CODE,
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} = require("../errors/index-errors");
 
-  NOT_FOUND_STATUS_CODE,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/errors");
-
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
-
-    .catch((err) => {
-      console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
-    });
+    .then((users) => res.send(users))
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt.hash(password, 10).then((hash) =>
@@ -32,81 +26,61 @@ const createUser = (req, res) => {
         res.status(201).send(userCopy);
       })
       .catch((err) => {
-        console.error(err);
         if (err.name === "ValidationError") {
-          return res
-            .status(BAD_REQUEST_STATUS_CODE)
-            .send({ message: err.message });
+          next(new BadRequestError(err.message));
+        } else if (err.code === 11000) {
+          next(new ConflictError("User with this email already exists"));
+        } else {
+          next(err);
         }
-        if (err.name === "11000") {
-          return res.status(409).send({ message: "Duplicate Email" });
-        }
-        return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       })
   );
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_STATUS_CODE).send({ message: err.message });
-      }
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+        next(new BadRequestError("Invalid user ID format"));
+      } else if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("User not found"));
+      } else {
+        next(err);
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
-// Update from task #3
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
+
   if (!email || email.trim() === "" || !password || password.trim() === "") {
-    return res
-      .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "All fields are required!" });
+    return next(new BadRequestError("Email and password are required"));
   }
 
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      return res.status(200).send({ token });
+      res.send({ token });
     })
-    .catch((error) => {
-      if (error.message === "Incorrect email or password") {
-        res
-          .status(UNAUTHORIZED_STATUS_CODE)
-          .send({ message: "Check email and password" });
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        next(new UnauthorizedError("Incorrect email or password"));
+      } else {
+        next(err);
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: error.message });
     });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, avatar }, { new: true })
-    .then((user) => res.status(200).send(user))
-
-    .catch((err) => {
-      console.error(err);
-      if (err.message === "Authorization Required") {
-        res
-          .status(UNAUTHORIZED_STATUS_CODE)
-          .send({ message: "Incorrect Username" });
-      }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "Error From updateProfile" });
-    });
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports = { getUsers, createUser, getCurrentUser, login, updateProfile };

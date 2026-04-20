@@ -4,22 +4,24 @@ const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
 
 function auth(req, res, next) {
   const { authorization } = req.headers;
+
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res
-      .status(UNAUTHORIZED_STATUS_CODE)
-      .send({ error: "Authorization Required" });
+    const err = new Error("Authorization Required");
+    err.statusCode = UNAUTHORIZED_STATUS_CODE;
+    return next(err);
   }
+
   const token = authorization.replace("Bearer ", "");
-  let payload;
+
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
+    return next();
   } catch (error) {
-    return res
-      .status(UNAUTHORIZED_STATUS_CODE)
-      .send({ error: "Authorization Required" });
+    const err = new Error("Authorization Required");
+    err.statusCode = UNAUTHORIZED_STATUS_CODE;
+    return next(err);
   }
-  req.user = payload;
-  return next();
 }
 
 module.exports = auth;

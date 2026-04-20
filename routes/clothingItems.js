@@ -9,12 +9,20 @@ const {
   unlikeItem,
 } = require("../controllers/clothingItems");
 
+const {
+  createItemValidation,
+  idValidator,
+} = require("../middlewares/validation");
+
+// Public: get all items
 router.get("/", getItems);
+
+// Protected: everything below needs auth
 router.use(auth);
-router.post("/", createItem);
-router.put("/:itemId", updateItem);
-router.delete("/:itemId", deleteItem);
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", unlikeItem);
+router.post("/", createItemValidation, createItem);
+router.patch("/:itemId", idValidator, updateItem);
+router.delete("/:itemId", idValidator, deleteItem);
+router.put("/:itemId/likes", idValidator, likeItem);
+router.delete("/:itemId/likes", idValidator, unlikeItem);
 
 module.exports = router;
