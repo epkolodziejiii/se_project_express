@@ -1,6 +1,6 @@
-# WTWR - Sprint 12 & 13 (What to Wear?): Backend Description
+# WTWR - Sprint 13 & 14 & 15 (What to Wear?): Backend Description
 
-This back-end project is focused on creating a server for the WTWR application. This project displays a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization (Sprint 14). Some difficulties arose with testing the project, however, now the error handeling is standardized and all research has been concluded into all error messages.
+This back-end project is focused on creating a server for the WTWR application. This project displays a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization with deployment on google cloud (Sprint 14 & 15). Some difficulties arose with testing the project, however, now the error handeling is standardized and all research has been concluded into all error messages.
 
 ## Tech Stack
 
@@ -9,18 +9,27 @@ This back-end project is focused on creating a server for the WTWR application. 
 -Node.js
 -Java Script
 -Express
+-Google Cloud - VM
 -AI was used sparing to help research error messages and middleware issues.
 
-## Pitch Video (recorded on Loom): (https://drive.google.com/file/d/1mktAOCMvARtCgSIZZ4OVUjiB8C47m0b_/view?usp=drive_link)
+## Pitch Video (recorded on Loom): (tbd)
 
-##Deployment
+##Deployment -https://www.wtwrepk3.serverpit.com
 
--This webpage is deployed on Google Cloud [Link to the project on Github] (TBD)
+-This webpage is deployed on Google Cloud [front-end project on Github] => ([link](https://github.com/epkolodziejiii/se_project_react.git))
 
-## Running the Project
+## Interacting with the Project
 
-`npm run start` — to launch the server
-
-`npm run dev` — to launch the server with the hot reload feature
+`Sign Up` — to register an account
+`Log In Button` — to log in using a username and password
+`+Add Clothes` - to add items that will be filtered based on current weather
 
 ### Testing
+
+`Crash Tested`
+
+router.get('/crash-test', () => {
+setTimeout(() => {
+throw new Error('Server will crash now');
+}, 0);
+});

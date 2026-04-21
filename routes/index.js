@@ -8,6 +8,11 @@ const {
 } = require("../middlewares/validation");
 
 // ROOT ROUTES (public)
+router.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 router.post("/signin", loginValidator, login);
 router.post("/signup", createUserValidator, createUser);
 
