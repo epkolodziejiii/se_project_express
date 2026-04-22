@@ -12,7 +12,7 @@ This back-end project is focused on creating a server for the WTWR application. 
 -Google Cloud - VM
 -AI was used sparing to help research error messages and middleware issues.
 
-## Pitch Video (recorded on Loom): (tbd)
+## Pitch Video (recorded on Loom): => ([Shared Link](https://drive.google.com/file/d/1UugoRMd1f4ChOqeoWVyZEP-7YAroCi1F/view?usp=drive_link))
 
 ##Deployment -https://www.wtwrepk3.serverpit.com
 
